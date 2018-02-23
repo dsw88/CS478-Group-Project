@@ -4,6 +4,9 @@ The scripts in this directory contain the logic used to gather the dataset from 
 ## Requirements to run this script
 TODO
 
+## Todo
+Get zip code or state
+
 ## Disclaimer
 This script was used to scrape listing data from Cars.com for the purposes of a student learning project for a machine
 learning class.
