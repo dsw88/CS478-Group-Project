@@ -21,16 +21,8 @@ def get_listing_details_from_soup(soup):
         print("  Listing didn't exist on details page!!!!!!")
         return None
 
-    # Get price
-    price = soup.find_all('cars-monthly-payment-detail')[0].get('price')
-    if price == "" or price == 'Not Priced': # Don't want the data if there's no label
-        print("  Price didn't exist on details page!!!!!")
-        return None
-    listing_details['price'] = float(price)
-
     # Get primary car attributes
     primary_car_attributes_json = soup.find('script', {'type': 'application/ld+json'}).get_text()
-    print(primary_car_attributes_json)
     primary_attributes = json.loads(primary_car_attributes_json)
     car_attributes = None
     for attribute in primary_attributes:
@@ -40,15 +32,23 @@ def get_listing_details_from_soup(soup):
     if not car_attributes:
         raise RuntimeError('Listing didnt have core attributes!')
 
+    # Require price
+    price = get_value_for_db(car_attributes['offers']['price'])
+    if not price or price == 'Not Priced': # Don't want the data if there's no label
+        print("  Price didn't exist on details page!!!!!")
+        return None
+
+    listing_details['price'] = float(price)
     listing_details['vin'] = get_value_for_db(car_attributes['vehicleIdentificationNumber'])
     listing_details['make'] = get_value_for_db(car_attributes['manufacturer']['name'])
     listing_details['model'] = get_value_for_db(car_attributes['model']['name'])
     listing_details['year'] = get_value_for_db(car_attributes['vehicleModelDate'])
     listing_details['condition'] = get_value_for_db(car_attributes['itemCondition']['name'])
     mpg = get_value_for_db(car_attributes['fuelEfficiency']['value'])
-    mpg_parts = mpg.split('-')
-    listing_details['mpg_city'] = mpg_parts[0]
-    listing_details['mpg_highway'] = mpg_parts[1]
+    if mpg:
+        mpg_parts = mpg.split('-')
+        listing_details['mpg_city'] = mpg_parts[0]
+        listing_details['mpg_highway'] = mpg_parts[1]
     listing_details['fuel_type'] = get_value_for_db(car_attributes['fuelType'])
     listing_details['mileage'] = get_value_for_db(car_attributes['mileageFromOdometer']['value'])
     listing_details['number_of_doors'] = get_value_for_db(car_attributes['numberOfDoors'])
@@ -56,11 +56,12 @@ def get_listing_details_from_soup(soup):
     listing_details['interior_color'] = get_value_for_db(car_attributes['vehicleInteriorColor'])
     # listing_details['seating_capacity'] = get_value_for_db(car_attributes['vehicleSeatingCapacity'])
     listing_details['transmission'] = get_value_for_db(car_attributes['vehicleTransmission'])
-    listing_details['cars_rating'] = get_value_for_db(car_attributes['aggregateRating']['ratingValue'])
+    if car_attributes.get('aggregateRating'):
+        listing_details['cars_rating'] = get_value_for_db(car_attributes['aggregateRating']['ratingValue'])
     listing_details['exterior_color'] = get_value_for_db(car_attributes['color'])
     listing_details['city'] = get_value_for_db(car_attributes['offers']['seller']['address']['addressLocality'])
     listing_details['state'] = get_value_for_db(car_attributes['offers']['seller']['address']['addressRegion'])
-    listing_details['price'] = get_value_for_db(car_attributes['offers']['price'])
+
 
     # Get zip code if exists
     address_el = soup.find('p', class_='vdp-dealer-location__address')

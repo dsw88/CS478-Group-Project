@@ -69,7 +69,7 @@ def save_listing_details(listing_id, listing_details):
 def get_listings_to_load(page_num):
     cursor = cached_conn.cursor()
     offset = (page_num - 1) * page_size
-    cursor.execute("SELECT listing_id FROM car WHERE vin IS NULL ORDER BY listing_id DESC OFFSET %s LIMIT %s", (offset, page_size))
+    cursor.execute("SELECT listing_id FROM car WHERE price IS NULL ORDER BY listing_id DESC OFFSET %s LIMIT %s", (offset, page_size))
     results = cursor.fetchall()
     return list(map(lambda row: row[0], results))
 
