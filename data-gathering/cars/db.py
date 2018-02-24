@@ -10,11 +10,58 @@ if not db_user or not db_pass:
 cached_conn = psycopg2.connect("dbname=scraped_cars user={} password={}".format(db_user, db_pass))
 
 
-def save_listing_details(listing_id, ld):
+def save_listing_details(listing_id, listing_details):
     print("  Saving details to db")
     cursor = cached_conn.cursor()
-    cursor.execute("UPDATE car SET vin = %s, price = %s, fuel_type = %s, mpg_city = %s, mpg_highway = %s, exterior_color = %s, interior_color = %s, engine = %s, mileage = %s, advanced_details = %s WHERE listing_id = %s",
-                   (ld.get('vin'), ld.get('price'), ld.get('fuel_type'), ld.get('mpg_city'), ld.get('mpg_highway'), ld.get('exterior_color'), ld.get('interior_color'), ld.get('engine'), ld.get('mileage'), json.dumps(ld['advanced_details']), listing_id))
+    advanced_details = json.dumps(listing_details['advanced_details']) if listing_details.get('advanced_details') else None
+    sql = """
+    UPDATE car SET 
+      vin = %s,
+      make = %s,
+      model = %s,
+      year = %s,
+      condition = %s,
+      mpg_city = %s,
+      mpg_highway = %s,
+      fuel_type = %s,
+      mileage = %s,
+      number_of_doors = %s,
+      engine = %s,
+      interior_color = %s,
+      transmission = %s,
+      cars_rating = %s,
+      exterior_color = %s,
+      city = %s,
+      state = %s,
+      zip_code = %s,
+      advanced_details = %s,
+      price = %s
+    WHERE listing_id = %s
+    """
+    params = (
+        listing_details.get('vin'),
+        listing_details.get('make'),
+        listing_details.get('model'),
+        listing_details.get('year'),
+        listing_details.get('condition'),
+        listing_details.get('mpg_city'),
+        listing_details.get('mpg_highway'),
+        listing_details.get('fuel_type'),
+        listing_details.get('mileage'),
+        listing_details.get('number_of_doors'),
+        listing_details.get('engine'),
+        listing_details.get('interior_color'),
+        listing_details.get('transmission'),
+        listing_details.get('cars_rating'),
+        listing_details.get('exterior_color'),
+        listing_details.get('city'),
+        listing_details.get('state'),
+        listing_details.get('zip_code'),
+        advanced_details,
+        listing_details.get('price'),
+        listing_id
+    )
+    cursor.execute(sql, params)
     cached_conn.commit()
     cursor.close()
 
