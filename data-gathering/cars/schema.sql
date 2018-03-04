@@ -3,6 +3,7 @@ CREATE TABLE car (
     vin VARCHAR(50),
     make VARCHAR(100),
     model VARCHAR(100),
+    trim VARCHAR(200),
     year INTEGER,
     condition VARCHAR(200),
     mpg_city INTEGER,

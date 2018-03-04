@@ -66,12 +66,53 @@ def save_listing_details(listing_id, listing_details):
     cursor.close()
 
 
+def save_model(listing_id, model):
+    cursor = cached_conn.cursor()
+    sql = """
+    UPDATE car SET 
+      model = %s
+    WHERE listing_id = %s
+    """
+    params = (
+        model,
+        listing_id
+    )
+    cursor.execute(sql, params)
+    cached_conn.commit()
+    cursor.close()
+
+def save_trim(listing_id, trim):
+    cursor = cached_conn.cursor()
+    sql = """
+        UPDATE car SET 
+          trim = %s
+        WHERE listing_id = %s
+        """
+    params = (
+        trim,
+        listing_id
+    )
+    cursor.execute(sql, params)
+    cached_conn.commit()
+    cursor.close()
+
+
 def get_listings_to_load(page_num):
     cursor = cached_conn.cursor()
     offset = (page_num - 1) * page_size
     cursor.execute("SELECT listing_id FROM car WHERE price IS NULL ORDER BY listing_id DESC OFFSET %s LIMIT %s", (offset, page_size))
     results = cursor.fetchall()
+    cursor.close()
     return list(map(lambda row: row[0], results))
+
+
+def get_listings_with_vins(page_num):
+    cursor = cached_conn.cursor()
+    offset = (page_num - 1) * page_size
+    cursor.execute("SELECT listing_id, vin, model, trim FROM car WHERE vin IS NOT NULL ORDER BY listing_id DESC OFFSET %s LIMIT %s", (offset, page_size))
+    results = cursor.fetchall()
+    cursor.close()
+    return list(map(lambda row: {'listing_id': row[0], 'vin': row[1], 'model': row[2], 'trim': row[3]}, results))
 
 
 def insert_listing_id(listing_id):
