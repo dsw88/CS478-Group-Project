@@ -96,6 +96,17 @@ def save_trim(listing_id, trim):
     cached_conn.commit()
     cursor.close()
 
+def delete_listing(listing_id):
+    if not listing_id:
+        raise RuntimeError('Listing ID must be provided')
+    cursor = cached_conn.cursor()
+    sql = """
+    DELETE FROM car WHERE listing_id = %s
+    """
+    params = (listing_id,)
+    cursor.execute(sql, params)
+    cached_conn.commit()
+    cursor.close()
 
 def get_listings_to_load(page_num):
     cursor = cached_conn.cursor()

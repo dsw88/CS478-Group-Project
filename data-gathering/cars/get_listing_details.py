@@ -13,5 +13,8 @@ while True:
         listing_details = scraping.load_listing_detail_page(listing_id)
         if listing_details:
             db.save_listing_details(listing_id, listing_details)
+        else:
+            print("  Deleting listing for bad listing ID")
+            db.delete_listing(listing_id)
 
     page_num += 1
