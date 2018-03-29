@@ -20,5 +20,6 @@ CREATE TABLE car (
     state VARCHAR(200),
     zip_code CHAR(5),
     advanced_details JSONB,
+    source VARCHAR(100),
     price REAL
 );

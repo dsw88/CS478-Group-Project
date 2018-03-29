@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 data/cars/processed_data
+data/ksl/scraped_data
+data/ksl/processed_data
+data/aggregated/processed_data
