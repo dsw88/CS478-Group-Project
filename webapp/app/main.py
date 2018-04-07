@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request
 
-app = Flask(__name__, static_url_path='')
+application = Flask(__name__, static_url_path='')
 
-@app.route("/")
+@application.route("/")
 def index():
     """Route that renders the homepage of the CD server"""
     return render_template('index.html')
 
-@app.route("/healthcheck")
+@application.route("/healthcheck")
 def healthcheck():
     return "I'm healthy!"
 
