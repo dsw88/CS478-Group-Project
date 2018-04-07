@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request
+from . import cars_model
+import json
 
 application = Flask(__name__, static_url_path='')
 
@@ -11,4 +13,9 @@ def index():
 def healthcheck():
     return "I'm healthy!"
 
-# TODO - API CALLS GO HERE
+
+@application.route("/api/predict", methods=['POST'])
+def predict():
+    car_to_predict = request.get_json()
+    prediction = cars_model.predict_car(car_to_predict)
+    return json.dumps(prediction)
