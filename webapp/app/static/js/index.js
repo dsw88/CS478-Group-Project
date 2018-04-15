@@ -28,9 +28,14 @@ $(document).ready(function () {
             async: false,
             data: JSON.stringify(postBody),
             success: function (data) {
-                var price = parseFloat(data.price);
-                var displayPrice = price.formatMoney(2);
-                var resultHtml = "<h1>Prediction:</h1><h3>$" + displayPrice + "</h3>";
+                var mlp_price = parseFloat(data.mlp);
+                var rf_price = parseFloat(data.rf);
+                var gb_price = parseFloat(data.gb);
+                var mean_price = parseFloat(data.mean);
+                var resultHtml = "<h1>Predictions:</h1>" + 
+                    "<h3>Gradient Boosting: $" + gb_price.formatMoney(2) + "</h3>" +
+                    "<h3>MLP: $" + mlp_price.formatMoney(2) + "</h3>" +
+                    "<h3>Random Forest: $" + rf_price.formatMoney(2) + "</h3>";
                 $("#resultsSection").html(resultHtml);
             }
         })
